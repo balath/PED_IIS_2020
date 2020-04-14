@@ -32,20 +32,20 @@ public class Test {
     }
 
     public void test_ResultadoSimulacion(ArrayList<Comunidad> comunidades, int diasSimulacion){
-        ResultadoSimulacion testing = new ResultadoSimulacion(comunidades);
+        Resultado_Simulacion testResultados = new Resultado_Simulacion(comunidades);
         LocalDate fecha = LocalDate.now();
         Random rand = new Random();
 
         for (int i = 0; i < diasSimulacion; i++) {
             LocalDate finalFecha = fecha;
             comunidades.forEach(comunidad ->
-                    testing.addResultadoDiario(comunidad, finalFecha, rand.nextInt(comunidad.getPoblacion()))
+                    testResultados.setResultadoDiario(comunidad, finalFecha, rand.nextInt(comunidad.getPoblacion()))
             );
             fecha = fecha.plusDays(1);
         }
         fecha = LocalDate.now();
         for (int i = 0; i < diasSimulacion; i++) {
-            System.out.println(testing.toString(fecha));
+            System.out.println(testResultados.toString(fecha));
             fecha = fecha.plusDays(1);
         }
 

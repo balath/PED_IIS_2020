@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Simulador {
@@ -18,14 +19,20 @@ public class Simulador {
         this.promedio_V = promedio_V;
     }
 
-    private void simulaUnDia(ArrayList<Comunidad> comunidades){
-        /*Aqui habrá que hacer un mapeo de las poblaciones de cada comunidad para el calculo de viajeros
-        y quizás para el número de infectados*/
-//        comunidades.forEach(
-//                (comunidad) -> {
-//                    comunidad.setInfectados(comunidad.getInfectados() * (1 + E * p));
-//                }
-//        );
+    private void simular(ArrayList<Comunidad> comunidades, LocalDate fecha, int diasSimulacion){
+        if (comunidades.isEmpty() || diasSimulacion <= 0) {
+            return;
+        }
+        Resultado_Simulacion resultado = new Resultado_Simulacion(comunidades);
+        //El dia uno aparece un primer infectado en una de las comunidades, 0 en el resto.
+        comunidades.forEach(comunidad -> resultado.setResultadoDiario(comunidad,fecha,0));
+        resultado.setResultadoDiario(comunidades.get(0),fecha,1);
+        /**
+         * por aqui
+         */
+
+
+
     }
 
 
