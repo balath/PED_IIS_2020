@@ -1,6 +1,6 @@
-/**
- * La clase Comunidad modela el tipo de comunidad ya sea genérica, o de países, pueblos o provincias
- */
+/*************************************************************************************************************
+ * La clase Comunidad modela el tipo de comunidad ya sea genérica, o de países, pueblos o provincias         *
+ *************************************************************************************************************/
 public class Comunidad extends Object{
 
     private String nombre;

@@ -1,7 +1,6 @@
 /************************************************************************************************************
- * La clase Resultado_Simulacion modela la estructura de datos que tiene un resultado de simulación:        *
- * - Una serie de comunidades                                                                               *
- * - Los resultados de cada comunidad para cada día de simulación                                           *
+ * La clase Resultado_Simulacion modela la estructura de datos que tiene un resultado de simulación: Una    *
+ * serie de comunidades, con los resultados para cada dia de la simulación                                  *
  ************************************************************************************************************/
 import java.util.ArrayList;
 import java.util.Set;
@@ -10,12 +9,12 @@ import java.time.LocalDate;
 
 public class Resultado_Simulacion extends Object {
 
-    private HashMap<Comunidad,HashMap<LocalDate,Integer>> resultados; //Lista de resultados por día para cada comunidad.
+    //Mapa de resultados por día para cada comunidad.
+    private HashMap<Comunidad,HashMap<LocalDate,Integer>> resultados;
 
      /**
-     * Constructor de la clase comunidades que crea la lista de comunidades por copia del parámetro y prepara una
-     * lista de resultados del mismo tamaño.
-     * @param comunidades Lista de comunidades para crear un objeto de resultados
+     * Constructor de la clase que crea el mapa de comunidades y resultados.
+     * @param comunidades Lista de comunidades sobre las que se calculará el resultado.
      */
     public Resultado_Simulacion(ArrayList<Comunidad> comunidades) {
         resultados = new HashMap<>();

@@ -1,3 +1,6 @@
+/**********************************************************************************************
+ * La clase Provincia modela una subclase de comunidad compuesta por una serie de pueblos     *
+ **********************************************************************************************/
 import java.util.HashSet;
 
 public class Provincia extends Comunidad {
@@ -7,14 +10,19 @@ public class Provincia extends Comunidad {
     /**
      * Constructor de clase Provincia
      */
-    public Provincia(String nombre, int poblacion){
-        super(nombre, poblacion);
+    public Provincia(String nombre){
+        super(nombre, 0);
         pueblos = new HashSet<>();
     }
 
     @Override
     public Comunidad.EnumComunidad getTipoComunidad() {
         return Comunidad.EnumComunidad.PROVINCIA;
+    }
+
+    @Override
+    public int getPoblacion() {
+        return pueblos.stream().map(pueblo -> pueblo.getPoblacion()).reduce(0,Integer::sum);
     }
 
     /**
