@@ -44,11 +44,11 @@ public class Comunidad extends Object{
 
     /**
      * Devuelve el número de viajeros de la comunidad según el coeficiente dado como parametro de entrada
-     * @param promedio_V es el porcentaje aplicable sobre el total de la población.
+     * @param coeficiente_V es el porcentaje aplicable sobre el total de la población.
      * @return numero de viajeros de la comunidad
      */
-    public int getViajeros(float promedio_V){
-        return (int)(poblacion * (promedio_V / 100));
+    public int getViajeros(float coeficiente_V){
+        return (int)(poblacion * (coeficiente_V / 100));
     }
 
     /**

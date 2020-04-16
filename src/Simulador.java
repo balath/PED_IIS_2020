@@ -16,13 +16,13 @@ public class Simulador {
     /**
      * Constructor de la clase Simulador
      * @param E es el número de contactos que en promedio tenga cada infectado con personas no infectadas.
-     * @param p es la probabilidad de infectarse con un contacto.
-     * @param promedio_V de habitantes de cada comunidad que viaja diariamente a cada una de las otras comunidades.
+     * @param p es la probabilidad de infectarse con un contacto expresado en porcentaje.
+     * @param coeficiente_V de habitantes de cada comunidad que viaja diariamente a cada una de las otras comunidades.
      */
-    public Simulador(int E, int p, int promedio_V) {
+    public Simulador(int E, int p, int coeficiente_V) {
         this.E = E;
         this.p = ((float)p)/100;
-        this.promedio_V = promedio_V;
+        this.promedio_V = coeficiente_V;
     }
 
     /**
@@ -37,7 +37,7 @@ public class Simulador {
             return null;
         }
         //Se crea el objeto donde se almacenará el resultado de la simulación.
-        Resultado_Simulacion resultado = new Resultado_Simulacion(comunidades);
+        Resultado_Simulacion resultado = new Resultado_Simulacion(comunidades, fecha, diasSimulacion);
 
         //El dia uno aparece un primer infectado en una de las comunidades(0 en el resto).
         for (Comunidad comunidad : comunidades) {
@@ -45,11 +45,16 @@ public class Simulador {
         }
         resultado.setResultadoDiario(comunidades.get(0),fecha,1);
 
-        //A partir del segundo día se calcula la expansión para cada comunidad durante los dias de simulación.
+        //A partir del segundo día se calcula la expansión para cada comunidad durante los días de simulación.
         for (int i = 2; i <= diasSimulacion; i++) {
             fecha = fecha.plusDays(1);
-            System.out.println(fecha.toString());
             for (Comunidad comunidad : comunidades) {
+                //Primero se comprueba si toda la población está infectada, en cuyo caso, según el modelo, el número
+                //de infectados seguirá siendo el total de la población.
+                if (comunidad.getPoblacion() == resultado.getInfectadosDiaComunidad(comunidad,fecha.minusDays(1))) {
+                    resultado.setResultadoDiario(comunidad,fecha,comunidad.getPoblacion());
+                    continue;
+                }
                 resultado.setResultadoDiario(comunidad, fecha, calculoTotal(comunidad, resultado, fecha));
             }
         }
@@ -96,7 +101,7 @@ public class Simulador {
         //los viajeros del resto de comunidades, por lo que el calculo se realiza sobre la coleccion de comunidades:
         return resultados.getComunidades().stream()
                 //Primero se filtran las comunidades para quitar a la comunidad propia del computo:
-                .filter(comunidades -> !comunidades.equals(comunidadPropia))
+                .filter(comunidades -> !(comunidades.equals(comunidadPropia)))
                 //Luego, se mapean las comunidades filtradas en el resultado para cada una de aplicar la fórmula N_v
                 .map(comunidadV -> (int)
                         (E * p * comunidadV.getViajeros(promedio_V)                     // E * p * V

@@ -2,6 +2,8 @@
  * La clase Resultado_Simulacion modela la estructura de datos que tiene un resultado de simulación: Una    *
  * serie de comunidades, con los resultados para cada dia de la simulación                                  *
  ************************************************************************************************************/
+import java.math.BigInteger;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashMap;
@@ -11,14 +13,18 @@ public class Resultado_Simulacion extends Object {
 
     //Mapa de resultados por día para cada comunidad.
     private HashMap<Comunidad,HashMap<LocalDate,Integer>> resultados;
+    private LocalDate fechaInicial;
+    private int diasSimulacion;
 
      /**
      * Constructor de la clase que crea el mapa de comunidades y resultados.
      * @param comunidades Lista de comunidades sobre las que se calculará el resultado.
      */
-    public Resultado_Simulacion(ArrayList<Comunidad> comunidades) {
+    public Resultado_Simulacion(ArrayList<Comunidad> comunidades, LocalDate fechaInicial, int diasSimulacion) {
         resultados = new HashMap<>();
         comunidades.forEach(comunidad -> resultados.put(comunidad,new HashMap<>()));
+        this.fechaInicial = fechaInicial;
+        this.diasSimulacion = diasSimulacion;
     }
 
     /**
@@ -48,7 +54,7 @@ public class Resultado_Simulacion extends Object {
      * @return porcentaje de infectados según parámetros
      */
     public int getPorcentajeDiaComunidad(Comunidad comunidad, LocalDate fecha){
-        return getInfectadosDiaComunidad(comunidad, fecha) * 100 / comunidad.getPoblacion();
+        return (getInfectadosDiaComunidad(comunidad, fecha) * 100) / comunidad.getPoblacion();
     }
 
     /**
@@ -63,20 +69,39 @@ public class Resultado_Simulacion extends Object {
      * Devuelve la población total de todas las comunidades sobre la que se realiza la simulación.
      * @return muestra total
      */
-    public int getMuestraTotal(){
-        return resultados.keySet().stream().map(comunidad -> comunidad.getPoblacion()).reduce(0,Integer::sum);
+    public BigInteger getMuestraTotal(){
+        return resultados.keySet()
+                .stream()
+                .map(comunidad -> new BigInteger(String.valueOf(comunidad.getPoblacion())))
+                .reduce(BigInteger.ZERO,BigInteger::add);
+    }
+
+    /**
+     * Método que devuelve la fecha de inicio de un resultado de simulación.
+     * @return
+     */
+    public LocalDate getFechaInicio(){
+        return fechaInicial;
+    }
+
+    /**
+     * Método que devuelve los dias totales del resultado de la simulación.
+     * @return
+     */
+    public int getDiasSimulacion(){
+        return diasSimulacion;
     }
 
     /**
      * Devuelve el total de infectados para todas las comunidades durante el periodo de simulación.
      * @return total de infectados diario
      */
-    public int getInfectadosDiaTotal(LocalDate fecha){
+    public BigInteger getInfectadosDiaTotal(LocalDate fecha){
         return resultados
                 .values()
                 .stream()
-                .map(results -> results.get(fecha))
-                .reduce(0,Integer::sum);
+                .map(results -> new BigInteger(String.valueOf(results.get(fecha))))
+                .reduce(BigInteger.ZERO,BigInteger::add);
     }
 
     /**
@@ -84,8 +109,8 @@ public class Resultado_Simulacion extends Object {
      * @param fecha sobre la que se desea calcular
      * @return porcentaje
      */
-    public int getPorcentajeDiaTotal(LocalDate fecha){
-        return getInfectadosDiaTotal(fecha) *100 / getMuestraTotal();
+    public BigInteger getPorcentajeDiaTotal(LocalDate fecha){
+        return (getInfectadosDiaTotal(fecha).multiply(BigInteger.valueOf(100))).divide(getMuestraTotal());
     }
 
     /**
@@ -100,7 +125,8 @@ public class Resultado_Simulacion extends Object {
      */
     public String toString(LocalDate fecha){
         StringBuilder out = new StringBuilder();
-        out.append("Resultados a fecha ").append(fecha.toString()).appendCodePoint(10);
+        out.append("Resultados a fecha ")
+                .append(fecha.format(DateTimeFormatter.ofPattern("dd' de 'LLLL"))).appendCodePoint(10);
         resultados.forEach(
                 (comunidad,mapa) ->
                 {

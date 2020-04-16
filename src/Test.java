@@ -1,7 +1,9 @@
 /**************************************************
  * Clase para realizar pruebas sobre PED_IIS_2020 *
  **************************************************/
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Random;
 import java.time.LocalDate;
 
@@ -14,24 +16,33 @@ public class Test {
     public Test(int diasSimulacion) {
         Random num = new Random();
         testComunidades = new ArrayList<>();
-        testResultados = new Resultado_Simulacion(testComunidades);
-        testSimulador = new Simulador(num.nextInt(7),50,10);
-
         test_Comunidad();
-        test_printResultados(test_Simulador(testComunidades,LocalDate.now(),diasSimulacion),diasSimulacion);
-        //test_ResultadoSimulacion(comunidades, diasSimulacion);
+
+        testSimulador = new Simulador(5,50,10);
+        testResultados = test_Simulador(testComunidades,LocalDate.now(),diasSimulacion);
+
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                TablaDatos.createAndShowGUI(testResultados);
+            }
+        });
+
+//        test_printResultados(testResultados,diasSimulacion);
+
     }
 
     public void test_Comunidad(){
 
-        testComunidades.add(new Comunidad("Mercurio ", 120));
-        testComunidades.add(new Comunidad("Venus    ", 230));
-        testComunidades.add(new Comunidad("Marte    ", 340));
-        testComunidades.add(new Comunidad("Jupiter  ", 450));
-        testComunidades.add(new Comunidad("Saturno  ", 560));
-        testComunidades.add(new Comunidad("Urano    ", 670));
-        testComunidades.add(new Comunidad("Neptuno  ", 780));
-        testComunidades.add(new Comunidad("Vulcano  ", 890));
+        testComunidades.add(new Comunidad("Mercurio ", 1205981));
+        testComunidades.add(new Comunidad("Venus    ", 2302548));
+        testComunidades.add(new Comunidad("Marte    ", 3402548));
+        testComunidades.add(new Comunidad("Jupiter  ", 4502569));
+        testComunidades.add(new Comunidad("Saturno  ", 5603584));
+        testComunidades.add(new Comunidad("Urano    ", 6703698));
+        testComunidades.add(new Comunidad("Neptuno  ", 7803685));
+        testComunidades.add(new Comunidad("Vulcano  ", 8905968));
 
         System.out.println("Comunidades en la simulación:");
         testComunidades.forEach(System.out::println);
