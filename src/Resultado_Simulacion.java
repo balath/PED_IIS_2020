@@ -5,9 +5,9 @@
 import java.math.BigInteger;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.HashMap;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 public class Resultado_Simulacion extends Object {
 
@@ -54,15 +54,19 @@ public class Resultado_Simulacion extends Object {
      * @return porcentaje de infectados según parámetros
      */
     public int getPorcentajeDiaComunidad(Comunidad comunidad, LocalDate fecha){
-        return (getInfectadosDiaComunidad(comunidad, fecha) * 100) / comunidad.getPoblacion();
+        int infectados = getInfectadosDiaComunidad(comunidad, fecha);
+        return infectados == comunidad.getPoblacion()? 100 : (infectados * 100) / comunidad.getPoblacion();
     }
 
     /**
-     * Devuelve un Set de las comunidades participantes en la simulación.
-     * @return Set de comunidades
+     * Devuelve un Array ordenado de las comunidades participantes en la simulación.
+     * @return Array de comunidades
      */
-    public Set<Comunidad> getComunidades() {
-        return resultados.keySet();
+    public ArrayList<Comunidad> getComunidades() {
+        return (ArrayList<Comunidad>) resultados.keySet()
+                .stream()
+                .sorted((com1,com2) -> ((Integer)com1.getId()).compareTo(com2.getId()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -113,35 +117,4 @@ public class Resultado_Simulacion extends Object {
         return (getInfectadosDiaTotal(fecha).multiply(BigInteger.valueOf(100))).divide(getMuestraTotal());
     }
 
-    /**
-     * Devuelve los resultados para cada comunidad de la simulación y para el total, en una fecha dada.
-     * @param fecha de la que se desean recuperar los datos
-     * @return String con los datos en el formato:
-     *          Resultados a fecha [fecha]
-     *          [nombre_comunidad]  [poblacion] [infectados]    [porcentaje]
-     *          .
-     *          .
-     *          TOTAL:      [poblacion] [infectados]      [porcentaje]
-     */
-    public String toString(LocalDate fecha){
-        StringBuilder out = new StringBuilder();
-        out.append("Resultados a fecha ")
-                .append(fecha.format(DateTimeFormatter.ofPattern("dd' de 'LLLL"))).appendCodePoint(10);
-        resultados.forEach(
-                (comunidad,mapa) ->
-                {
-                    out.append(comunidad.toString()).appendCodePoint(9);
-                    out.append(getInfectadosDiaComunidad(comunidad,fecha)).appendCodePoint(9);
-                    out.append(getPorcentajeDiaComunidad(comunidad,fecha)).append("% ").appendCodePoint(10);
-                }
-        );
-        out.append("TOTAL:     ")
-                .append(getMuestraTotal())
-                .appendCodePoint(9)
-                .append(getInfectadosDiaTotal(fecha))
-                .appendCodePoint(9)
-                .append(getPorcentajeDiaTotal(fecha)).append("% ")
-                .appendCodePoint(10);
-        return out.toString();
-    }
 }

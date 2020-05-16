@@ -10,19 +10,14 @@ public class Simulador {
     private int E;
     /* La probabilidad de infectarse con un contacto */
     private float p;
-    /* Porcentaje de habitantes de cada comunidad que viaja diariamente a cada una de las otras comunidades */
-    private int promedio_V;
 
     /**
      * Constructor de la clase Simulador
-     * @param E es el número de contactos que en promedio tenga cada infectado con personas no infectadas.
-     * @param p es la probabilidad de infectarse con un contacto expresado en porcentaje.
-     * @param coeficiente_V de habitantes de cada comunidad que viaja diariamente a cada una de las otras comunidades.
+     * @param datos Array con todos los datos de la simlación.
      */
-    public Simulador(int E, int p, int coeficiente_V) {
-        this.E = E;
-        this.p = ((float)p)/100;
-        this.promedio_V = coeficiente_V;
+    public Simulador(Object[][] datos) {
+        this.E = (Integer)datos[Main.DataIndex.E.ordinal()][0];
+        this.p = (float) ((Integer)datos[Main.DataIndex.P.ordinal()][0] / 100.00);
     }
 
     /**
@@ -32,12 +27,13 @@ public class Simulador {
      * @param diasSimulacion es el número de dias sobre los que se desea realizar.
      * @return un objeto Resultado_Simulación con el resultado de los cálculos
      */
-    public Resultado_Simulacion simular(ArrayList<Comunidad> comunidades, LocalDate fecha, int diasSimulacion){
+    public Resultado_Simulacion calculoTotal(ArrayList<Comunidad> comunidades, int diasSimulacion,  LocalDate fecha){
         if (comunidades.isEmpty() || diasSimulacion <= 0) {
             return null;
         }
         //Se crea el objeto donde se almacenará el resultado de la simulación.
         Resultado_Simulacion resultado = new Resultado_Simulacion(comunidades, fecha, diasSimulacion);
+        int subtotal;
 
         //El dia uno aparece un primer infectado en una de las comunidades(0 en el resto).
         for (Comunidad comunidad : comunidades) {
@@ -55,7 +51,9 @@ public class Simulador {
                     resultado.setResultadoDiario(comunidad,fecha,comunidad.getPoblacion());
                     continue;
                 }
-                resultado.setResultadoDiario(comunidad, fecha, calculoTotal(comunidad, resultado, fecha));
+                subtotal =  calculoInterno(resultado.getInfectadosDiaComunidad(comunidad,fecha.minusDays(1)))
+                            + calculoViajeros(comunidad, resultado, fecha.minusDays(1));
+                resultado.setResultadoDiario(comunidad, fecha, Math.min(subtotal, comunidad.getPoblacion()));
             }
         }
         return resultado;
@@ -68,22 +66,8 @@ public class Simulador {
      * @param diasSimulacion es el número de dias sobre los que se desea realizar.
      * @return un objeto Resultado_Simulación con el resultado de los cálculos
      */
-    public Resultado_Simulacion simular(ArrayList<Comunidad> comunidades, int diasSimulacion){
-        return simular(comunidades,LocalDate.now(),diasSimulacion);
-    }
-
-    /**
-     * Método privado que llama a los métodos de cálculo de los infectados internos de una comunidad y causados
-     * por los viajeros y devuelve el total.
-     * @param comunidad sobre la que se realizan los cálculos.
-     * @param resultados ya calculados sobre los dias previos.
-     * @param fecha sobre la que se quiere obtener el resultado.
-     * @return resultado de infectados según los parámetros pasados.
-     */
-    private int calculoTotal(Comunidad comunidad, Resultado_Simulacion resultados, LocalDate fecha){
-        int total = calculoInterno(resultados.getInfectadosDiaComunidad(comunidad,fecha.minusDays(1)))
-                    + calculoViajeros(comunidad, resultados, fecha.minusDays(1));
-        return Math.min(total, comunidad.getPoblacion());
+    public Resultado_Simulacion calculoTotal(ArrayList<Comunidad> comunidades, int diasSimulacion){
+        return calculoTotal(comunidades, diasSimulacion,LocalDate.now());
     }
 
     /**
@@ -104,7 +88,7 @@ public class Simulador {
                 .filter(comunidades -> !(comunidades.equals(comunidadPropia)))
                 //Luego, se mapean las comunidades filtradas en el resultado para cada una de aplicar la fórmula N_v
                 .map(comunidadV -> (int)
-                        (E * p * comunidadV.getViajeros(promedio_V)                     // E * p * V
+                        (E * p * comunidadV.getViajeros()                              // E * p * V
                         * resultados.getInfectadosDiaComunidad(comunidadV,diaPrevio)   // Infectados comunidad origen
                         / comunidadV.getPoblacion())                                   // Población comunidad origen
                 )

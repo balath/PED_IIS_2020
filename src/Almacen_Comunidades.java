@@ -6,19 +6,24 @@ import java.util.ArrayList;
 
 public class Almacen_Comunidades {
 
-    ArrayList<Comunidad> comunidades;
+    private static final int NOMBRES = Main.DataIndex.NOMBRE.ordinal();
+    private static final int POBLACIONES = Main.DataIndex.POBLACION.ordinal();
+    private static final int PORCENTAJES = Main.DataIndex.PORCENTAJE_V.ordinal();
+
+    private ArrayList<Comunidad> comunidades;
 
     /**
      * Constructor de clase Almacen_Comunidades
-     * @param nombres Array de nombres de cada comunidad a crear.
-     * @param poblaciones Poblaciones totales de cada comunidad a crear.
-     * @pre (nombres[i] && poblaciones[i]) ϵ comunidad_i
-     * @pre nombres.length == poblaciones.lenght
+     * @param datos Array de datos introducidos por usuario
      */
-    public Almacen_Comunidades(String[] nombres, Integer[] poblaciones){
-        comunidades = new ArrayList<>(nombres.length);
-        for (int i = 0; i < nombres.length; i++) {
-            comunidades.add(new Comunidad(nombres[i],poblaciones[i]));
+    public Almacen_Comunidades(Object[][] datos){
+        comunidades = new ArrayList<>(datos[0].length);
+        for (int i = 0; i < datos[0].length; i++) {
+            comunidades.add(new Comunidad(
+                    i,
+                    (String)datos[NOMBRES][i],
+                    (int)datos[POBLACIONES][i],
+                    (int)datos[PORCENTAJES][i]));
         }
     }
 

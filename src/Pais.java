@@ -10,8 +10,8 @@ public class Pais extends Comunidad {
     /**
      * Constructor de clase Pais
      */
-    public Pais(String nombre){
-        super(nombre, 0);
+    public Pais(int id, String nombre){
+        super(id, nombre, 0, 0);
         provincias = new HashSet<>();
     }
 

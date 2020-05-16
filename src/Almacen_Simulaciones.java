@@ -2,6 +2,9 @@
  * La clase Almacen_Simulaciones modela un almacén para resultados de simulaciones que permite navegar entre *
  * las distintas simulaciones implementándolo a modo de lista por punto de interés mediante dos pilas.       *
  *************************************************************************************************************/
+
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.util.Stack;
 
 public class Almacen_Simulaciones {
@@ -12,12 +15,16 @@ public class Almacen_Simulaciones {
     *  el elemento en la posición siguiente. */
     private Stack<Resultado_Simulacion> siguiente;
 
+    private static Almacen_Simulaciones almacenSimulaciones;
+    private PropertyChangeSupport soporteCambios;
+
     /**
      * Constructor de clase.
      */
-    public Almacen_Simulaciones(){
+    private Almacen_Simulaciones(){
         anterior = new Stack<>();
         siguiente = new Stack<>();
+        soporteCambios = new PropertyChangeSupport(this);
     }
 
     /**
@@ -29,19 +36,27 @@ public class Almacen_Simulaciones {
         siguiente.push(resultadoNuevo);
     }
 
+    public static Almacen_Simulaciones getSingletonInstance() {
+        if (almacenSimulaciones == null){
+            almacenSimulaciones = new Almacen_Simulaciones();
+        }
+        else{
+            System.out.println("No se puede crear el almacén porque ya se ha creado");
+        }
+        return almacenSimulaciones;
+    }
+
     /**
      * Método que añade un resultado nuevo al almacén en la posición actual.
      * @param resultadoNuevo para añadir.
      * @return resultado añadido.
      */
-    public Resultado_Simulacion addSimulacion(Resultado_Simulacion resultadoNuevo){
-        if (siguiente.empty()) { //Si la pila siguiente esta vacía el parámetro se apila en ella.
-            siguiente.push(resultadoNuevo);
-        } else { //Si no está vacía, primero se mueve el elemento que ocupe la cima a la pila de elementos anteriores.
+    public void addSimulacion(Resultado_Simulacion resultadoNuevo){
+        while (!siguiente.empty()) { //Vaciar la pila siguiente.
             anterior.push(siguiente.pop());
-            siguiente.push(resultadoNuevo);
         }
-        return resultadoNuevo;
+        siguiente.push(resultadoNuevo);  //Añadir el nuevo resultado como actual
+        update(resultadoNuevo);
     }
 
     /**
@@ -52,6 +67,7 @@ public class Almacen_Simulaciones {
         if (siguiente.empty()) { //Se comprueba que la posición actual no sea nula.
             return null;
         }
+        update(siguiente.peek());
         return siguiente.peek();
     }
 
@@ -60,7 +76,7 @@ public class Almacen_Simulaciones {
      * @return resultado siguiente.
      */
     public Resultado_Simulacion getSiguiente(){
-        if (siguiente.size() <= 1) { //Se comprueba que la posición siguiente no sea nula.
+        if (siguiente.size() <= 1) { //Se comprueba que exista un segundo elemento en la pila.
             return null;
         }
         anterior.push(siguiente.pop());
@@ -78,4 +94,17 @@ public class Almacen_Simulaciones {
         siguiente.push(anterior.pop());
         return getActual();
     }
+
+    private void update(Resultado_Simulacion resultadoNuevo){
+        soporteCambios.firePropertyChange("Resultado", null, resultadoNuevo);
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener auditor) {
+        soporteCambios.addPropertyChangeListener(auditor);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener auditor) {
+        soporteCambios.removePropertyChangeListener(auditor);
+    }
+
 }

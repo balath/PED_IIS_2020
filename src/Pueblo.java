@@ -7,8 +7,8 @@ public class Pueblo extends Comunidad {
     /**
      * Constructor de clase Pueblo
      */
-    public Pueblo(String nombre, int poblacion){
-        super(nombre,poblacion);
+    public Pueblo(int id, String nombre, int poblacion){
+        super(id,nombre,poblacion,0);
     }
 
     @Override

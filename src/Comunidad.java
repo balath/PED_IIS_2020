@@ -3,8 +3,10 @@
  *************************************************************************************************************/
 public class Comunidad extends Object{
 
+    private int id;
     private String nombre;
     private int poblacion;
+    private int porcentaje_V;
 
     public enum EnumComunidad {
         COMUNIDAD, PAIS, PUEBLO, PROVINCIA
@@ -13,9 +15,11 @@ public class Comunidad extends Object{
     /**
      * Constructor de clase Comunidad
      */
-    public Comunidad(String nombre, int poblacion){
+    public Comunidad(int id, String nombre, int poblacion, int porcentaje_V){
+        this.id = id;
         this.nombre = nombre;
         this.poblacion = poblacion;
+        this.porcentaje_V = porcentaje_V;
     }
 
     /**
@@ -24,6 +28,14 @@ public class Comunidad extends Object{
      */
     public EnumComunidad getTipoComunidad(){
         return EnumComunidad.COMUNIDAD;
+    }
+
+    /**
+     * Devuelve el número id de la comunidad
+     * @return número id
+     */
+    public int getId(){
+        return id;
     }
 
     /**
@@ -43,12 +55,11 @@ public class Comunidad extends Object{
     }
 
     /**
-     * Devuelve el número de viajeros de la comunidad según el coeficiente dado como parametro de entrada
-     * @param coeficiente_V es el porcentaje aplicable sobre el total de la población.
+     * Devuelve el número de viajeros de la comunidad según el porcentaje_V
      * @return numero de viajeros de la comunidad
      */
-    public int getViajeros(float coeficiente_V){
-        return (int)(poblacion * (coeficiente_V / 100));
+    public int getViajeros(){
+        return (int)(poblacion * (((float)porcentaje_V) / 100));
     }
 
     /**
@@ -65,6 +76,14 @@ public class Comunidad extends Object{
      */
     public void setPoblacion(int poblacion){
         this.poblacion = poblacion;
+    }
+
+    /**
+     * Modifica el porcentaje de viajeros de la comunidad
+     * @param porcentaje_V nuevo
+     */
+    public void setPorcentaje_V(int porcentaje_V){
+        this.porcentaje_V = porcentaje_V;
     }
 
     /**
