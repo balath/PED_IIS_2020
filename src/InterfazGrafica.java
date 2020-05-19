@@ -4,13 +4,13 @@
 import org.jfree.chart.ChartPanel;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
+import java.util.HashSet;
 
 public class InterfazGrafica extends JFrame implements PropertyChangeListener {
 
@@ -256,11 +256,22 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
                     .anyMatch(n -> (int) n <= 0)) {
                 throw new NumberFormatException("Valor <= 0");
             }
+            if (arrayNombres.length != new HashSet<String>(Arrays.asList(arrayNombres)).size()) {
+                throw new IllegalArgumentException("Existen dos comunidades con el mismo nombre");
+            }
             //Comprobación de excepciones en la introducción de números y salida del método en caso de que existan.
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(
                     null,
                     "Número incorrecto\n" + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE
             );
