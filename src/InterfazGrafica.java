@@ -1,4 +1,9 @@
+/*************************************************************************************************************
+ * La clase InterfazGráfica gestiona la entrada de datos y configura la GUI.                                 *
+ *************************************************************************************************************/
 import org.jfree.chart.ChartPanel;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.swing.*;
 import java.awt.*;
@@ -7,10 +12,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 
-
 public class InterfazGrafica extends JFrame implements PropertyChangeListener {
 
-    private Object[][] datos;
     private JPanel Panel;
     private JPanel tabla;
     private JTextField entrada_dias;
@@ -25,6 +28,11 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
     protected JPanel graficoTotales;
     protected JPanel graficoPorcentajes;
 
+    /**
+     * El constructor crea la GUI y configura las acciones de los botones de calcular, anterior y siguiente
+     *
+     * @param almacenSimulaciones referencia al almacén para las acciones de los botones
+     */
     public InterfazGrafica(Almacen_Simulaciones almacenSimulaciones) {
         setTitle("Simulador de expansión exponencial");
         crearBarraMenu();
@@ -34,45 +42,21 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
         setVisible(true);
         toFront();
         mostrarAyuda();
-
+        //El botón de calcular llama al método que recupera la entrada de datos.
         calcularButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String[] arrayNombres = nombres.getText().split("\n");
-                String[] arrayPoblaciones = poblaciones.getText().split("\n");
-                int comunidades = Math.min(arrayNombres.length, arrayPoblaciones.length);
-
-                datos = new Object[Main.DataIndex.values().length][comunidades];
-
-                try {
-                    datos[Main.DataIndex.DIAS_SIMULACION.ordinal()][0] = Integer.parseInt(entrada_dias.getText().trim());
-                    datos[Main.DataIndex.E.ordinal()][0] = Integer.parseInt(entrada_E.getText().trim());
-                    datos[Main.DataIndex.P.ordinal()][0] = Integer.parseInt(entrada_P.getText().trim());
-                    for (int i = 0; i < comunidades; i++) {
-                        datos[Main.DataIndex.NOMBRE.ordinal()][i] = arrayNombres[i].trim();
-                        datos[Main.DataIndex.POBLACION.ordinal()][i] = Integer.parseInt(arrayPoblaciones[i].trim());
-                        datos[Main.DataIndex.PORCENTAJE_V.ordinal()][i] = Integer.parseInt(entrada_V.getText().trim());
-                    }
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Formato de número incorrecto\n" + e.getMessage(),
-                            "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    return;
-                }
-                Main.entradaDatos(datos);
+                entradaDatos(almacenSimulaciones);
             }
         });
-
+        //El boton anterior, llama al método correspondiente del almacén de simulaciones.
         anteriorButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 almacenSimulaciones.getAnterior();
             }
         });
-
+        //El boton siguiente, llama al método correspondiente del almacén de simulaciones.
         siguienteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -81,6 +65,21 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
         });
     }
 
+    /**
+     * Método que recibe la llamada de cambios en las propiedades del objeto auditado (en este caso,
+     * se escuchan los cambios del almacén de simulaciones con el añadido o navegación por los resultados)
+     * y llama al método que actualiza la salida de los datos por pantalla.
+     *
+     * @param evento propiedad que ha cambiado, en este caso, el resultado en la posición actual.
+     */
+    @Override
+    public void propertyChange(PropertyChangeEvent evento) {
+        salidaDatos((Resultado_Simulacion) evento.getNewValue());
+    }
+
+    /**
+     * Método que crea y configura una barra de menús.
+     */
     private void crearBarraMenu() {
         JMenuBar menubar = new JMenuBar();
         setJMenuBar(menubar);
@@ -95,23 +94,29 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
         menu.add(acerca);
     }
 
+    /**
+     * Método que muestra un cuadro de diálogo con información de la introducción de los datos en la interfaz
+     */
     private void mostrarAyuda() {
         JOptionPane.showMessageDialog(
                 null,
-                "            Introduzca los datos de simulación en los apartados correspondientes\n\n" +
-                        "      Para crear distintas comunidades, introduzca un nombre por línea en el area de texto\n" +
+                "              Introduzca los datos de simulación en los apartados correspondientes\n\n" +
+                        "        Para crear distintas comunidades, introduzca un nombre por línea en el area de texto\n" +
                         "\"Nombres de las comunidades\" y la población en la misma línea del área \"Número de habitantes\"",
                 "Introduciendo datos de simulación",
                 JOptionPane.INFORMATION_MESSAGE
         );
     }
 
+    /**
+     * Método que muestra el cuadro de diálogo de ayuda "Acerca de"
+     */
     private void mostrarAcercaDe() {
         JOptionPane.showMessageDialog(
                 null,
-                "             - Simulador de expansión de virus -\n" +
+                "                 - Simulador de expansión de virus -\n" +
                         "PEC curso 2019-2020 Introducción a la Ingeniería de Software\n" +
-                        "                 Sergio Flor García 48904986V",
+                        "                     Sergio Flor García 48904986V",
                 "Acerca de",
                 JOptionPane.INFORMATION_MESSAGE
         );
@@ -220,12 +225,65 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
         return Panel;
     }
 
-    @Override
-    public void propertyChange(PropertyChangeEvent evento) {
-        actualizarTabla((Resultado_Simulacion) evento.getNewValue());
-        actualizarGraficos((Resultado_Simulacion) evento.getNewValue());
+    /**
+     * Método que realiza la recuperación de los datos de usuario y los pasa al main para que cree y coordine
+     * los objetos participantes en una simulación.
+     *
+     * @param almacenSimulaciones referencia al almacén de los resultados de simulaciones
+     */
+    private void entradaDatos(Almacen_Simulaciones almacenSimulaciones) {
+        String[] arrayNombres = nombres.getText().split("\n");
+        String[] arrayPoblaciones = poblaciones.getText().split("\n");
+        int comunidades = Math.min(arrayNombres.length, arrayPoblaciones.length);
+        //Creación del array de datos
+        Object[][] datos = new Object[Main.DataIndex.values().length][comunidades];
+        //Recuperación de los datos de usuario introducidos en la interfaz
+        try {
+            datos[Main.DataIndex.DIAS_SIMULACION.ordinal()][0] = Integer.valueOf(entrada_dias.getText().trim());
+            datos[Main.DataIndex.E.ordinal()][0] = Integer.valueOf(entrada_E.getText().trim());
+            datos[Main.DataIndex.P.ordinal()][0] = Integer.valueOf(entrada_P.getText().trim());
+            datos[Main.DataIndex.FECHA_INICIAL.ordinal()][0] = LocalDate.now();
+            for (int i = 0; i < comunidades; i++) {
+                datos[Main.DataIndex.NOMBRE.ordinal()][i] = arrayNombres[i].trim();
+                datos[Main.DataIndex.POBLACION.ordinal()][i] = Integer.valueOf(arrayPoblaciones[i].trim());
+                datos[Main.DataIndex.PORCENTAJE_V.ordinal()][i] = Integer.valueOf(entrada_V.getText().trim());
+            }
+            //Comprobación de que el array de datos no contiene valores menores o igual a 0
+            if (Arrays.asList(datos)
+                    .stream()
+                    .flatMap(array -> Arrays.asList(array).stream())
+                    .filter(obj -> obj instanceof Integer)
+                    .anyMatch(n -> (int) n <= 0)) {
+                throw new NumberFormatException("Valor <= 0");
+            }
+            //Comprobación de excepciones en la introducción de números y salida del método en caso de que existan.
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Número incorrecto\n" + e.getMessage(),
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+            );
+            return;
+        }
+        Main.entradaDatos(datos, almacenSimulaciones);
     }
 
+    /**
+     *      * Método que realiza las llamadas correspondientes para actualizar las vistas de datos
+     *      *
+     *      * @param resultado nuevo resultado para mostrar
+     */
+    private void salidaDatos(Resultado_Simulacion resultado) {
+        actualizarTabla(resultado);
+        actualizarGraficos(resultado);
+    }
+
+    /**
+     * Método que actualiza la vista de datos por tabla
+     *
+     * @param resultado nuevo resultado a mostrar
+     */
     private void actualizarTabla(Resultado_Simulacion resultado) {
         JTable nuevaTabla = new TablaDatos(resultado).getTabla();
         nuevaTabla.setEnabled(false);
@@ -235,6 +293,11 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
         tabla.validate();
     }
 
+    /**
+     * Método que actualiza la vista de datos por gráficas
+     *
+     * @param resultado nuevo resultado a mostrar
+     */
     private void actualizarGraficos(Resultado_Simulacion resultado) {
         GraficoDatos nuevosGraficos = new GraficoDatos(resultado);
         final ChartPanel totales = new ChartPanel(nuevosGraficos.getTotales());
@@ -247,5 +310,4 @@ public class InterfazGrafica extends JFrame implements PropertyChangeListener {
         graficoPorcentajes.add(porcentajes);
         graficoPorcentajes.validate();
     }
-
 }

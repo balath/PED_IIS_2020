@@ -10,8 +10,8 @@ public class Provincia extends Comunidad {
     /**
      * Constructor de clase Provincia
      */
-    public Provincia(int id, String nombre){
-        super(id, nombre, 0,0);
+    public Provincia(int id, String nombre, int poblacion, int porcentaje_V){
+        super(id, nombre, poblacion,porcentaje_V);
         pueblos = new HashSet<>();
     }
 
@@ -20,18 +20,17 @@ public class Provincia extends Comunidad {
         return Comunidad.EnumComunidad.PROVINCIA;
     }
 
-    @Override
-    public int getPoblacion() {
-        return pueblos.stream().map(pueblo -> pueblo.getPoblacion()).reduce(0,Integer::sum);
-    }
-
     /**
      * Método que asocia un pueblo a la provincia
      * @return true si se ha asociado con exito
      *         false si ya existía un pueblo asociado con ese nombre
      */
     public boolean addPueblo(Pueblo nuevoPueblo){
-        return pueblos.add(nuevoPueblo);
+        if (pueblos.add(nuevoPueblo)) {
+            poblacion += nuevoPueblo.getPoblacion();
+            return true;
+        }
+        return false;
     }
 
     /**

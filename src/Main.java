@@ -1,33 +1,30 @@
-import java.beans.PropertyChangeListener;
-import java.time.LocalDate;
-import java.util.ArrayList;
+/**********************************************************************************************
+ * Clase Main de la aplicación, que instancia la estructura de datos e inicia la interfaz     *
+ **********************************************************************************************/
 import java.util.Locale;
-import java.util.Random;
 
 public class Main {
 
-    public enum DataIndex {NOMBRE,POBLACION,PORCENTAJE_V,E,P,DIAS_SIMULACION,FECHA_INICIAL};
-
-    private static Almacen_Simulaciones almacenSimulaciones;
+    //Enumerado que codifica la configuración de los datos en el array donde se recogen de la entrada de usuario.
+    public enum DataIndex{
+        NOMBRE,POBLACION,PORCENTAJE_V,E,P,DIAS_SIMULACION,FECHA_INICIAL
+    };
 
     public static void main(String[] args){
         Locale.setDefault(new Locale("es","ES"));
-        //Se instancian el almacen de simulaciones y la GUI, y se relaciona el modelo (los resultados de las
-        // simulaciones almacenadas) con la vista mediante la .
-        almacenSimulaciones = Almacen_Simulaciones.getSingletonInstance();
+        Almacen_Simulaciones almacenSimulaciones = Almacen_Simulaciones.getSingletonInstance();
         InterfazGrafica interfaz = new InterfazGrafica(almacenSimulaciones);
+        // Se relaciona el modelo con la vista añadiendo la interfaz como auditor de los cambios en el almacén.
         almacenSimulaciones.addPropertyChangeListener(interfaz);
     }
 
-    public static void entradaDatos(Object[][] datos){
+    public static void entradaDatos(Object[][] datos, Almacen_Simulaciones almacenSimulaciones){
         Almacen_Comunidades comunidades = new Almacen_Comunidades(datos);
         Simulador simulador = new Simulador(datos);
         Resultado_Simulacion simulacion = simulador.calculoTotal(
                 comunidades.getAlmacen(),
-                (Integer)datos[DataIndex.DIAS_SIMULACION.ordinal()][0]
+                (Integer)datos[Main.DataIndex.DIAS_SIMULACION.ordinal()][0]
         );
         almacenSimulaciones.addSimulacion(simulacion);
     }
-
-
 }

@@ -3,7 +3,6 @@
  * serie de comunidades, con los resultados para cada dia de la simulación                                  *
  ************************************************************************************************************/
 import java.math.BigInteger;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.time.LocalDate;

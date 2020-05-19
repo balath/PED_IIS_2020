@@ -6,10 +6,6 @@ import java.util.ArrayList;
 
 public class Almacen_Comunidades {
 
-    private static final int NOMBRES = Main.DataIndex.NOMBRE.ordinal();
-    private static final int POBLACIONES = Main.DataIndex.POBLACION.ordinal();
-    private static final int PORCENTAJES = Main.DataIndex.PORCENTAJE_V.ordinal();
-
     private ArrayList<Comunidad> comunidades;
 
     /**
@@ -18,12 +14,12 @@ public class Almacen_Comunidades {
      */
     public Almacen_Comunidades(Object[][] datos){
         comunidades = new ArrayList<>(datos[0].length);
-        for (int i = 0; i < datos[0].length; i++) {
+        for (int i = 0; i < datos[Main.DataIndex.NOMBRE.ordinal()].length; i++) {
             comunidades.add(new Comunidad(
                     i,
-                    (String)datos[NOMBRES][i],
-                    (int)datos[POBLACIONES][i],
-                    (int)datos[PORCENTAJES][i]));
+                    (String)datos[Main.DataIndex.NOMBRE.ordinal()][i],
+                    (int)datos[Main.DataIndex.POBLACION.ordinal()][i],
+                    (int)datos[Main.DataIndex.PORCENTAJE_V.ordinal()][i]));
         }
     }
 

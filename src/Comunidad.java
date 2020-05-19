@@ -4,9 +4,9 @@
 public class Comunidad extends Object{
 
     private int id;
-    private String nombre;
-    private int poblacion;
-    private int porcentaje_V;
+    protected String nombre;
+    protected int poblacion;
+    protected int porcentaje_V;
 
     public enum EnumComunidad {
         COMUNIDAD, PAIS, PUEBLO, PROVINCIA
@@ -85,19 +85,4 @@ public class Comunidad extends Object{
     public void setPorcentaje_V(int porcentaje_V){
         this.porcentaje_V = porcentaje_V;
     }
-
-    /**
-     * Devuelve un String con los datos de la comunidad
-     * @return String con el formato:
-     *         [nombre]    [poblacion]
-     */
-    public String toString(){
-        StringBuilder linea = new StringBuilder();
-        return linea
-                .append(getNombre())
-                .appendCodePoint(9)
-                .append(getPoblacion())
-                .toString();
-    }
-
 }

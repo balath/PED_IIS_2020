@@ -2,7 +2,7 @@
  * La clase Simulador se encarga de calcular una simulación según el modelo descrito en el enunciado de la práctica *
  ********************************************************************************************************************/
 import java.time.LocalDate;
-import java.util.ArrayList;
+        import java.util.ArrayList;
 
 public class Simulador {
 
@@ -52,7 +52,7 @@ public class Simulador {
                     continue;
                 }
                 subtotal =  calculoInterno(resultado.getInfectadosDiaComunidad(comunidad,fecha.minusDays(1)))
-                            + calculoViajeros(comunidad, resultado, fecha.minusDays(1));
+                        + calculoViajeros(comunidad, resultado, fecha.minusDays(1));
                 resultado.setResultadoDiario(comunidad, fecha, Math.min(subtotal, comunidad.getPoblacion()));
             }
         }
@@ -81,16 +81,15 @@ public class Simulador {
      * Aplica la fórmula de expansión para calcular los infectados causados por viajeros de otras comunidades.
      */
     private int calculoViajeros(Comunidad comunidadPropia, Resultado_Simulacion resultados, LocalDate diaPrevio) {
-        // El calculo de los infectados por viajeros desde el punto de vista de una comunidad, implica a todos
-        //los viajeros del resto de comunidades, por lo que el calculo se realiza sobre la coleccion de comunidades:
-        return resultados.getComunidades().stream()
-                //Primero se filtran las comunidades para quitar a la comunidad propia del computo:
+        // Se utilizan los resultados de todas las comunidades excepto la propia.
+        return resultados.getComunidades()
+                .stream()
                 .filter(comunidades -> !(comunidades.equals(comunidadPropia)))
-                //Luego, se mapean las comunidades filtradas en el resultado para cada una de aplicar la fórmula N_v
-                .map(comunidadV -> (int)
-                        (E * p * comunidadV.getViajeros()                              // E * p * V
-                        * resultados.getInfectadosDiaComunidad(comunidadV,diaPrevio)   // Infectados comunidad origen
-                        / comunidadV.getPoblacion())                                   // Población comunidad origen
+                //Se mapean las comunidades filtradas para aplicar a cada una la fórmula N_v del enunciado
+                .map(comunidad_V -> (int)
+                        (E * p * comunidad_V.getViajeros()                              // E * p * V
+                                * resultados.getInfectadosDiaComunidad(comunidad_V,diaPrevio)   // * Infectados comunidad origen
+                                / comunidad_V.getPoblacion())                                   // / Población comunidad origen
                 )
                 //Finalmente se suman los resultados de aplicar las formulas a cada comunidad
                 .reduce(0,Integer::sum);

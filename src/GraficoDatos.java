@@ -1,3 +1,7 @@
+/*************************************************************************************************************
+ * La clase GraficaDatos configura la vista de los resultados en dos gráficas de tendencia que muestran la   *
+ * evolución de los resultados totales y otra para la de los porcentajes totales sobre la población.         *
+ *************************************************************************************************************/
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;

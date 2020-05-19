@@ -10,8 +10,8 @@ public class Pais extends Comunidad {
     /**
      * Constructor de clase Pais
      */
-    public Pais(int id, String nombre){
-        super(id, nombre, 0, 0);
+    public Pais(int id, String nombre, int poblacion, int porcentaje_V){
+        super(id, nombre, poblacion,porcentaje_V);
         provincias = new HashSet<>();
     }
 
@@ -20,21 +20,18 @@ public class Pais extends Comunidad {
         return EnumComunidad.PAIS;
     }
 
-    @Override
     /**
-     * Redefine el método que devuelve la población como el resultado de las poblaciones de las provincias
-     */
-    public int getPoblacion() {
-        return provincias.stream().map(provincia -> provincia.getPoblacion()).reduce(0,Integer::sum);
-    }
-
-    /**
-     * Método que asocia una provincia al país
+     * Método que asocia una provincia al país e incrementa la población total del país con
+     * la de la provincia nueva.
      * @return true si se ha asociado con exito
      *         false si ya existía una provincia asociada con ese nombre
      */
     public boolean addProvincia(Provincia nuevaProvincia){
-        return provincias.add(nuevaProvincia);
+        if (provincias.add(nuevaProvincia)) {
+            poblacion += nuevaProvincia.getPoblacion();
+            return true;
+        }
+        return false;
     }
 
     /**

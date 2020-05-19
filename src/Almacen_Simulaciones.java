@@ -2,7 +2,6 @@
  * La clase Almacen_Simulaciones modela un almacén para resultados de simulaciones que permite navegar entre *
  * las distintas simulaciones implementándolo a modo de lista por punto de interés mediante dos pilas.       *
  *************************************************************************************************************/
-
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Stack;
@@ -33,7 +32,7 @@ public class Almacen_Simulaciones {
      */
     public Almacen_Simulaciones(Resultado_Simulacion resultadoNuevo){
         super();
-        siguiente.push(resultadoNuevo);
+        addSimulacion(resultadoNuevo);
     }
 
     public static Almacen_Simulaciones getSingletonInstance() {
@@ -56,43 +55,36 @@ public class Almacen_Simulaciones {
             anterior.push(siguiente.pop());
         }
         siguiente.push(resultadoNuevo);  //Añadir el nuevo resultado como actual
-        update(resultadoNuevo);
+        update(resultadoNuevo);   // Notificar cambio de propiedad a los auditores
     }
 
     /**
-     * Método que devuelve el resultado situado en la posición actual.
-     * @return resultado actual.
+     * Método que notifica cambio de propiedad con el resultado situado en la posición actual.
      */
-    public Resultado_Simulacion getActual(){
-        if (siguiente.empty()) { //Se comprueba que la posición actual no sea nula.
-            return null;
+    public void getActual(){
+        if (!siguiente.empty()) { //Se comprueba que la posición actual no sea nula.
+            update(siguiente.peek());
         }
-        update(siguiente.peek());
-        return siguiente.peek();
     }
 
     /**
-     * Método que devuelve el resultado situado en la posición siguiente.
-     * @return resultado siguiente.
+     * Método que notifica cambio de propiedad con el resultado situado en la posición siguiente.
      */
-    public Resultado_Simulacion getSiguiente(){
-        if (siguiente.size() <= 1) { //Se comprueba que exista un segundo elemento en la pila.
-            return null;
+    public void getSiguiente(){
+        if (!(siguiente.size() <= 1)) {    //Se comprueba que exista un segundo elemento en la pila.
+            anterior.push(siguiente.pop()); //Se mueven las posiciones
+            getActual();                    //Llamada al resultado actual
         }
-        anterior.push(siguiente.pop());
-        return getActual();
     }
 
     /**
-     * Método que devuelve el resultado situado en la posición anterior.
-     * @return resultado anterior.
+     * Método que notifica cambio de propiedad con el resultado situado en la posición anterior.
      */
-    public Resultado_Simulacion getAnterior(){
-        if (anterior.empty()) { //Se comprueba que la posición anterior no sea nula.
-            return null;
+    public void getAnterior(){
+        if (!anterior.empty()) { //Se comprueba que la posición anterior no sea nula.
+            siguiente.push(anterior.pop());
+            getActual();
         }
-        siguiente.push(anterior.pop());
-        return getActual();
     }
 
     private void update(Resultado_Simulacion resultadoNuevo){
