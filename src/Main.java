@@ -1,6 +1,7 @@
 /**********************************************************************************************
  * Clase Main de la aplicación, que instancia la estructura de datos e inicia la interfaz     *
  **********************************************************************************************/
+import java.beans.PropertyChangeListener;
 import java.util.Locale;
 
 public class Main {
@@ -13,7 +14,7 @@ public class Main {
     public static void main(String[] args){
         Locale.setDefault(new Locale("es","ES"));
         Almacen_Simulaciones almacenSimulaciones = Almacen_Simulaciones.getSingletonInstance();
-        InterfazGrafica interfaz = new InterfazGrafica(almacenSimulaciones);
+        PropertyChangeListener interfaz = new InterfazGrafica(almacenSimulaciones);
         // Se relaciona el modelo con la vista añadiendo la interfaz como auditor de los cambios en el almacén.
         almacenSimulaciones.addPropertyChangeListener(interfaz);
     }

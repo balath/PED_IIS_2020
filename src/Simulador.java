@@ -3,6 +3,10 @@
  ********************************************************************************************************************/
 import java.time.LocalDate;
         import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Simulador {
 
@@ -34,12 +38,13 @@ public class Simulador {
         //Se crea el objeto donde se almacenará el resultado de la simulación.
         Resultado_Simulacion resultado = new Resultado_Simulacion(comunidades, fecha, diasSimulacion);
         int subtotal;
+        LocalDate fechaActual = LocalDate.now();
 
         //El dia uno aparece un primer infectado en una de las comunidades(0 en el resto).
         for (Comunidad comunidad : comunidades) {
             resultado.setResultadoDiario(comunidad, fecha, 0);
         }
-        resultado.setResultadoDiario(comunidades.get(0),fecha,1);
+        resultado.setResultadoDiario(comunidades.get(0),fecha,2);
 
         //A partir del segundo día se calcula la expansión para cada comunidad durante los días de simulación.
         for (int i = 2; i <= diasSimulacion; i++) {
