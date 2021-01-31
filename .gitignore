@@ -1,6 +1,6 @@
 # Project exclude paths
 /out/
 /.idea
-PED_IIS_2020.iml
-PED_IIS_2020.eml
-PED_IIS_2020.userlibraries
+/PED_IIS_2020.iml
+/PED_IIS_2020.eml
+/PED_IIS_2020.userlibraries
